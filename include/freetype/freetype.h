@@ -1573,6 +1573,16 @@ FT_BEGIN_HEADER
   /*                                                                       */
   typedef struct FT_Slot_InternalRec_*  FT_Slot_Internal;
 
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Type>                                                                */
+  /*    FT_Colr_Internal                                                   */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    An opaque handle to an `FT_Colr_InternalRec' structure, used to    */
+  /*    model color related private data of a given @FT_Face object.       */
+  /*                                                                       */
+  typedef struct FT_Colr_InternalRec_*  FT_Colr_Internal;
 
   /*************************************************************************/
   /*                                                                       */
@@ -1775,6 +1785,8 @@ FT_BEGIN_HEADER
     void*             other;
 
     FT_Slot_Internal  internal;
+
+    FT_Colr_Internal  color_layers;
 
   } FT_GlyphSlotRec;
 
@@ -2737,11 +2749,11 @@ FT_BEGIN_HEADER
    *
    *   FT_LOAD_COLOR ::
    *     This flag is used to request loading of color embedded-bitmap
-   *     images.  The resulting color bitmaps, if available, will have the
-   *     @FT_PIXEL_MODE_BGRA format.  When the flag is not used and color
-   *     bitmaps are found, they will be converted to 256-level gray
-   *     bitmaps transparently.  Those bitmaps will be in the
-   *     @FT_PIXEL_MODE_GRAY format.
+   *     images or color outlines.  The resulting color bitmaps, if
+   *     available, will have the @FT_PIXEL_MODE_BGRA format.  When
+   *     the flag is not used and color bitmaps are found, they will
+   *     be converted to 256-level gray bitmaps transparently.
+   *     Those bitmaps will be in the @FT_PIXEL_MODE_GRAY format.
    *
    *   FT_LOAD_COMPUTE_METRICS ::
    *     This flag sets computing glyph metrics without the use of bundled

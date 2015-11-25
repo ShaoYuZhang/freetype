@@ -1,8 +1,8 @@
 /***************************************************************************/
 /*                                                                         */
-/*  sfnt.c                                                                 */
+/*  ttsbit.h                                                               */
 /*                                                                         */
-/*    Single object library component.                                     */
+/*    TrueType and OpenType embedded bitmap support (specification).       */
 /*                                                                         */
 /*  Copyright 1996-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
@@ -16,32 +16,39 @@
 /***************************************************************************/
 
 
-#define FT_MAKE_OPTION_SINGLE_OBJECT
+#ifndef __TTCOLR_H__
+#define __TTCOLR_H__
+
 
 #include <ft2build.h>
-#include "sfntpic.c"
-#include "ttload.c"
-#include "ttmtx.c"
-#include "ttcmap.c"
-#include "ttkern.c"
-#include "sfobjs.c"
-#include "sfdriver.c"
+#include "ttload.h"
 
-#ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
-#include "pngshim.c"
-#include "ttsbit.c"
-#endif
 
-#ifdef TT_CONFIG_OPTION_COLOR_LAYERS
-#include "ttcolr.c"
-#endif
+FT_BEGIN_HEADER
 
-#ifdef TT_CONFIG_OPTION_POSTSCRIPT_NAMES
-#include "ttpost.c"
-#endif
 
-#ifdef TT_CONFIG_OPTION_BDF
-#include "ttbdf.c"
-#endif
+  FT_LOCAL( FT_Error )
+  tt_face_load_colr( TT_Face    face,
+                     FT_Stream  stream );
+
+  FT_LOCAL( void )
+  tt_face_free_colr( TT_Face  face );
+
+  FT_LOCAL( FT_Error )
+  tt_face_load_colr_layers( TT_Face face,
+                            FT_Int glyph_id,
+                            FT_Glyph_LayerRec** ret_layers,
+                            FT_UShort* ret_num_layers );
+
+  FT_LOCAL( FT_Error )
+  tt_face_colr_blend_layer( TT_Face face,
+                            FT_Int color_index,
+                            FT_GlyphSlot dstSlot,
+                            FT_GlyphSlot srcSlot );
+
+FT_END_HEADER
+
+#endif /* __TTCOLR_H__ */
+
 
 /* END */

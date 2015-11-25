@@ -2479,6 +2479,7 @@
   {
     FT_Error      error;
     TT_LoaderRec  loader;
+    TT_Face       face;
 
 
     FT_TRACE1(( "TT_Load_Glyph: glyph index %d\n", glyph_index ));
@@ -2605,6 +2606,34 @@
     if ( !( load_flags & FT_LOAD_NO_SCALE ) &&
          size->root.metrics.y_ppem < 24     )
       glyph->outline.flags |= FT_OUTLINE_HIGH_PRECISION;
+
+    /* The outline based algorithm took care of metrics             */
+    /* Read additional color info if requested.                     */
+    face = (TT_Face)glyph->face;
+    if ( (load_flags & FT_LOAD_COLOR) && face->colr_and_cpal != NULL )
+    {
+      FT_Memory          memory = face->root.memory;
+      SFNT_Service       sfnt   = face->sfnt;
+      FT_Glyph_LayerRec *glyph_layers;
+      FT_UShort          num_glyph_layers;
+      FT_Colr_Internal   color_layers;
+
+      error = sfnt->load_colr_layer( face, glyph_index, &glyph_layers,
+          &num_glyph_layers );
+      if ( error )
+        return error;
+
+      if ( FT_NEW( color_layers ) )
+        return error;
+
+      if ( !error )
+      {
+        color_layers->layers = glyph_layers;
+        color_layers->num_layers = num_glyph_layers;
+        color_layers->load_flags = load_flags;
+        glyph->color_layers = color_layers;
+      }
+    }
 
     return error;
   }

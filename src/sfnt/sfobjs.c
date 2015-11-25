@@ -1230,6 +1230,12 @@
       }
     }
 
+    if ( sfnt->load_colr )
+    {
+      LOAD_( colr );
+      /* Ignore error. Missing optional colr/cpal is okay. */
+   }
+
     LOAD_( pclt );
     if ( error )
     {
@@ -1291,7 +1297,8 @@
       /* Compute face flags.                                               */
       /*                                                                   */
       if ( face->sbit_table_type == TT_SBIT_TABLE_TYPE_CBLC ||
-           face->sbit_table_type == TT_SBIT_TABLE_TYPE_SBIX )
+           face->sbit_table_type == TT_SBIT_TABLE_TYPE_SBIX ||
+           face->colr_and_cpal != NULL )
         flags |= FT_FACE_FLAG_COLOR;      /* color glyphs */
 
       if ( has_outline == TRUE )
@@ -1584,6 +1591,9 @@
       /* destroy the embedded bitmaps table if it is loaded */
       if ( sfnt->free_eblc )
         sfnt->free_eblc( face );
+
+      if ( sfnt->free_colr )
+        sfnt->free_colr( face );
     }
 
 #ifdef TT_CONFIG_OPTION_BDF
