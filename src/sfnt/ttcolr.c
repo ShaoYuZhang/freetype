@@ -260,21 +260,22 @@ typedef struct {
     if (ret_layers == NULL || ret_num_layers == NULL)
       return FT_THROW( Invalid_Argument );
 
-    if ( !find_base_glyph_record(colr->base_glyphs,
-        colr->num_base_glyphs, glyph_id, &glyph_record) )
+    if ( !find_base_glyph_record( colr->base_glyphs, colr->num_base_glyphs,
+                                  glyph_id, &glyph_record ) )
       return FT_THROW ( Missing_Property );
 
     /* Load all the color for the glyphs */
     /* this would be stored in the slot */
-    layer_record_ptr = colr->layers + glyph_record.first_layer_index * 4;
+    layer_record_ptr = colr->layers + glyph_record.first_layer_index * LayerSize;
     if ( FT_NEW_ARRAY( layers, glyph_record.num_layers ) )
-      return error;
+      goto Error;
 
-    for ( layer_idx = 0; layer_idx < glyph_record.num_layers; layer_idx++ ) {
+    for ( layer_idx = 0; layer_idx < glyph_record.num_layers; layer_idx++ )
+    {
       FT_UShort gid = FT_NEXT_USHORT( layer_record_ptr );
       FT_UShort palette_index = FT_NEXT_USHORT( layer_record_ptr );
 
-      if ( palette_index < cpal->num_palettes )
+      if ( palette_index != 0xFFFF && palette_index >= cpal->num_palettes_entries )
       {
         error = FT_THROW( Invalid_File_Format );
         goto Error;
